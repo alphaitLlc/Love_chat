@@ -1,0 +1,2 @@
+Ce dossier contiendra les icônes de l'application.
+Remplacez ce fichier par les icônes réelles aux dimensions spécifiées dans le manifest.json.

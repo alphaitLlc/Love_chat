@@ -1,0 +1,41 @@
+api_platform:
+    title: 'LinkMarket API'
+    version: '1.0.0'
+    description: 'API complète pour la plateforme LinkMarket'
+
+    formats:
+        jsonld: ['application/ld+json']
+        jsonhal: ['application/hal+json']
+        jsonapi: ['application/vnd.api+json']
+        json: ['application/json']
+        xml: ['application/xml', 'text/xml']
+        yaml: ['application/x-yaml']
+        csv: ['text/csv']
+        html: ['text/html']  # ajouté ici
+
+    collection:
+        pagination:
+            enabled: true
+            enabled_parameter_name: pagination
+            items_per_page_parameter_name: itemsPerPage
+            page_parameter_name: page
+            partial_parameter_name: partial
+
+    mapping:
+        paths: ['%kernel.project_dir%/src/Entity']
+
+    swagger:
+        versions: [3]
+        api_keys:
+            JWT:
+                name: Authorization
+                type: header
+
+    openapi:
+        contact:
+            name: 'LinkMarket API Support'
+            url: 'https://linkmarket.com/support'
+            email: 'support@linkmarket.com'
+        license:
+            name: 'MIT'
+            url: 'https://opensource.org/licenses/MIT'

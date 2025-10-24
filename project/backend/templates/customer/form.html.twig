@@ -1,0 +1,294 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}{{ form_title|default('Nouveau client') }} - Administration{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <div class="flex items-center">
+            <a href="{{ path('app_customers') }}" class="text-gray-400 hover:text-gray-600 mr-4">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1 class="page-title">{{ form_title|default('Nouveau client') }}</h1>
+        </div>
+        <div class="page-actions">
+            <a href="{{ path('app_customers') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-times mr-2"></i> Annuler
+            </a>
+            <button type="submit" form="customer-form" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-save mr-2"></i> Enregistrer
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2">
+            <div class="card">
+                {{ form_start(form, {'attr': {'id': 'customer-form', 'class': 'space-y-6'}}) }}
+                    <div class="space-y-6">
+                        <!-- Informations de base -->
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Informations personnelles</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    {{ form_label(form.firstName, 'Prénom *', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                                    {{ form_widget(form.firstName, {'attr': {
+                                        'class': 'mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm',
+                                        'required': 'required'
+                                    }}) }}
+                                    {{ form_errors(form.firstName) }}
+                                </div>
+                                <div>
+                                    {{ form_label(form.lastName, 'Nom *', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                                    {{ form_widget(form.lastName, {'attr': {
+                                        'class': 'mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm',
+                                        'required': 'required'
+                                    }}) }}
+                                    {{ form_errors(form.lastName) }}
+                                </div>
+                                <div class="md:col-span-2">
+                                    {{ form_label(form.email, 'Email *', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                                    {{ form_widget(form.email, {'attr': {
+                                        'class': 'mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm',
+                                        'required': 'required',
+                                        'type': 'email'
+                                    }}) }}
+                                    {{ form_errors(form.email) }}
+                                </div>
+                                <div>
+                                    {{ form_label(form.phone, 'Téléphone', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                                    {{ form_widget(form.phone, {'attr': {
+                                        'class': 'mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
+                                    }}) }}
+                                    {{ form_errors(form.phone) }}
+                                </div>
+                                <div>
+                                    {{ form_label(form.company, 'Société', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                                    {{ form_widget(form.company, {'attr': {
+                                        'class': 'mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
+                                    }}) }}
+                                    {{ form_errors(form.company) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="border-gray-200">
+
+                        <!-- Mot de passe -->
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Mot de passe</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    {{ form_label(form.plainPassword.first, 'Nouveau mot de passe', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                                    {{ form_widget(form.plainPassword.first, {'attr': {
+                                        'class': 'mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm',
+                                        'autocomplete': 'new-password'
+                                    }}) }}
+                                    {{ form_errors(form.plainPassword.first) }}
+                                </div>
+                                <div>
+                                    {{ form_label(form.plainPassword.second, 'Confirmer le mot de passe', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                                    {{ form_widget(form.plainPassword.second, {'attr': {
+                                        'class': 'mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm',
+                                        'autocomplete': 'new-password'
+                                    }}) }}
+                                    {{ form_errors(form.plainPassword.second) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="border-gray-200">
+
+                        <!-- Statut -->
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Statut du compte</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        {{ form_widget(form.isActive, {'attr': {
+                                            'class': 'focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded'
+                                        }}) }}
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        {{ form_label(form.isActive, 'Compte actif', {'label_attr': {'class': 'font-medium text-gray-700'}}) }}
+                                        <p class="text-gray-500">Désactivez pour empêcher la connexion de ce client.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        {{ form_widget(form.isVerified, {'attr': {
+                                            'class': 'focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded'
+                                        }}) }}
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        {{ form_label(form.isVerified, 'Email vérifié', {'label_attr': {'class': 'font-medium text-gray-700'}}) }}
+                                        <p class="text-gray-500">Cochez pour confirmer que l'email de ce client est vérifié.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <!-- Métadonnées -->
+            <div class="card">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Métadonnées</h3>
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-sm text-gray-500">Date de création</p>
+                        <p class="text-sm text-gray-900">
+                            {% if customer.id %}
+                                {{ customer.createdAt|date('d/m/Y à H:i') }}
+                                <span class="text-gray-400">({{ customer.createdAt|ago }})</span>
+                            {% else %}
+                                À la création du compte
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Dernière connexion</p>
+                        <p class="text-sm text-gray-900">
+                            {% if customer.lastLogin %}
+                                {{ customer.lastLogin|date('d/m/Y à H:i') }}
+                                <span class="text-gray-400">({{ customer.lastLogin|ago }})</span>
+                            {% else %}
+                                Jamais connecté
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div>
+                        {{ form_label(form.note, 'Note interne', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                        {{ form_widget(form.note, {'attr': {
+                            'class': 'mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm',
+                            'rows': '4'
+                        }}) }}
+                        <p class="mt-1 text-sm text-gray-500">Ces notes sont réservées à un usage interne et ne sont pas visibles par le client.</p>
+                        {{ form_errors(form.note) }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Groupe de clients -->
+            <div class="card">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Groupe de clients</h3>
+                <div class="space-y-4">
+                    <div>
+                        {{ form_label(form.customerGroup, 'Groupe', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                        {{ form_widget(form.customerGroup, {'attr': {
+                            'class': 'mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md'
+                        }}) }}
+                        <p class="mt-1 text-sm text-gray-500">Les groupes permettent d'appliquer des remises ou des prix spécifiques.</p>
+                        {{ form_errors(form.customerGroup) }}
+                    </div>
+                    <div class="flex justify-end">
+                        <a href="{{ path('app_customer_groups') }}" class="text-sm text-blue-600 hover:text-blue-900">Gérer les groupes</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Avatar -->
+            {% if form.avatar is defined %}
+            <div class="card">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Photo de profil</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 h-16 w-16 rounded-full overflow-hidden bg-gray-100">
+                            {% if customer.avatar %}
+                                <img id="avatar-preview" src="{{ asset('uploads/avatars/' ~ customer.avatar) }}" alt="Photo de profil" class="h-full w-full object-cover">
+                            {% else %}
+                                <div id="avatar-preview" class="h-full w-full flex items-center justify-center bg-gray-200 text-gray-500">
+                                    <i class="fas fa-user text-2xl"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="ml-4">
+                            <label for="avatar_upload" class="cursor-pointer inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <i class="fas fa-upload mr-1"></i> Changer
+                            </label>
+                            {{ form_widget(form.avatar, {'attr': {
+                                'class': 'hidden',
+                                'id': 'avatar_upload',
+                                'accept': 'image/*'
+                            }}) }}
+                            {{ form_errors(form.avatar) }}
+                            <p class="mt-1 text-xs text-gray-500">JPG, GIF ou PNG. Max 2MB.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block page_javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Prévisualisation de l'avatar
+            const avatarInput = document.getElementById('avatar_upload');
+            const avatarPreview = document.getElementById('avatar-preview');
+            
+            if (avatarInput && avatarPreview) {
+                avatarInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        if (file.size > 2 * 1024 * 1024) {
+                            alert('Le fichier est trop volumineux. Taille maximale : 2MB');
+                            this.value = '';
+                            return;
+                        }
+                        
+                        if (!file.type.match('image.*')) {
+                            alert('Veuillez sélectionner un fichier image valide');
+                            this.value = '';
+                            return;
+                        }
+                        
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            if (avatarPreview.tagName === 'IMG') {
+                                avatarPreview.src = event.target.result;
+                            } else {
+                                // Créer une image si ce n'est pas déjà une balise img
+                                const img = document.createElement('img');
+                                img.id = 'avatar-preview';
+                                img.src = event.target.result;
+                                img.alt = 'Photo de profil';
+                                img.className = 'h-full w-full object-cover';
+                                avatarPreview.parentNode.replaceChild(img, avatarPreview);
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+            
+            // Validation du formulaire
+            const form = document.getElementById('customer-form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const password = document.getElementById('{{ form.plainPassword.first.vars.id }}').value;
+                    const passwordConfirm = document.getElementById('{{ form.plainPassword.second.vars.id }}').value;
+                    
+                    if (password || passwordConfirm) {
+                        if (password !== passwordConfirm) {
+                            e.preventDefault();
+                            alert('Les mots de passe ne correspondent pas.');
+                            return false;
+                        }
+                        
+                        if (password.length > 0 && password.length < 8) {
+                            e.preventDefault();
+                            alert('Le mot de passe doit contenir au moins 8 caractères.');
+                            return false;
+                        }
+                    }
+                    
+                    return true;
+                });
+            }
+        });
+    </script>
+{% endblock %}

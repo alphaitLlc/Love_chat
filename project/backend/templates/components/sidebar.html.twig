@@ -1,0 +1,188 @@
+<!-- Sidebar -->
+<aside id="logo-sidebar" 
+       class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0" 
+       aria-label="Sidebar">
+    <div class="h-full px-3 pb-4 overflow-y-auto bg-white">
+        <!-- User profile -->
+        <div class="flex items-center p-4 mb-4 text-gray-900 rounded-lg bg-gray-50 group">
+            <img class="w-10 h-10 rounded-full" src="https://ui-avatars.com/api/?name=Admin&background=4f46e5&color=fff" alt="User photo">
+            <div class="ml-3">
+                <p class="text-sm font-medium text-gray-900">Admin</p>
+                <p class="text-xs font-medium text-gray-500">Administrateur</p>
+            </div>
+        </div>
+        
+        <ul class="space-y-2">
+            <!-- Dashboard -->
+            <li>
+                <a href="{{ path('app_dashboard') }}" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
+                    <i class="fas fa-tachometer-alt w-5 h-5 text-gray-500 transition duration-75 group-hover:text-indigo-600"></i>
+                    <span class="ml-3">Tableau de bord</span>
+                </a>
+            </li>
+            
+            <!-- Analytics -->
+            <li>
+                <a href="{{ path('analytics_dashboard') }}" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
+                    <i class="fas fa-chart-line w-5 h-5 text-gray-500 transition duration-75 group-hover:text-indigo-600"></i>
+                    <span class="ml-3">Analytiques</span>
+                </a>
+            </li>
+            
+            <!-- Products -->
+            <li>
+                <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100" aria-controls="products-dropdown" data-collapse-toggle="products-dropdown">
+                    <i class="fas fa-box w-5 h-5 text-gray-500 transition duration-75 group-hover:text-indigo-600"></i>
+                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Produits</span>
+                    <i class="fas fa-chevron-down w-4 h-4"></i>
+                </button>
+                <ul id="products-dropdown" class="hidden py-2 space-y-2">
+                    <li>
+                        <a href="{{ path('app_products') }}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100">
+                            Tous les produits
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_products_add') }}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100">
+                            Ajouter un produit
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_categories') }}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100">
+                            Catégories
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Orders -->
+            <li>
+                <a href="{{ path('app_orders') }}" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
+                    <i class="fas fa-shopping-cart w-5 h-5 text-gray-500 transition duration-75 group-hover:text-indigo-600"></i>
+                    <span class="ml-3">Commandes</span>
+                    <span class="inline-flex items-center justify-center px-2 ml-3 text-sm font-medium text-gray-800 bg-gray-200 rounded-full">15</span>
+                </a>
+            </li>
+            
+            <!-- Customers -->
+            <li>
+                <a href="{{ path('app_customers') }}" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
+                    <i class="fas fa-users w-5 h-5 text-gray-500 transition duration-75 group-hover:text-indigo-600"></i>
+                    <span class="ml-3">Clients</span>
+                </a>
+            </li>
+            
+            <!-- Marketing -->
+            <li>
+                <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100" aria-controls="marketing-dropdown" data-collapse-toggle="marketing-dropdown">
+                    <i class="fas fa-bullhorn w-5 h-5 text-gray-500 transition duration-75 group-hover:text-indigo-600"></i>
+                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Marketing</span>
+                    <i class="fas fa-chevron-down w-4 h-4"></i>
+                </button>
+                <ul id="marketing-dropdown" class="hidden py-2 space-y-2">
+                    <li>
+                        <a href="{{ path('app_coupons') }}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100">
+                            Codes promo
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_discounts') }}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100">
+                            Réductions
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_campaigns') }}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100">
+                            Campagnes
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Content -->
+            <li>
+                <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100" aria-controls="content-dropdown" data-collapse-toggle="content-dropdown">
+                    <i class="fas fa-file-alt w-5 h-5 text-gray-500 transition duration-75 group-hover:text-indigo-600"></i>
+                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Contenu</span>
+                    <i class="fas fa-chevron-down w-4 h-4"></i>
+                </button>
+                <ul id="content-dropdown" class="hidden py-2 space-y-2">
+                    <li>
+                        <a href="{{ path('app_pages') }}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100">
+                            Pages
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_blog') }}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100">
+                            Blog
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_menus') }}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100">
+                            Menus
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Settings -->
+            <li>
+                <a href="{{ path('app_settings') }}" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
+                    <i class="fas fa-cog w-5 h-5 text-gray-500 transition duration-75 group-hover:text-indigo-600"></i>
+                    <span class="ml-3">Paramètres</span>
+                </a>
+            </li>
+            
+            <!-- Documentation -->
+            <li>
+                <a href="{{ path('app_docs') }}" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
+                    <i class="fas fa-book w-5 h-5 text-gray-500 transition duration-75 group-hover:text-indigo-600"></i>
+                    <span class="ml-3">Documentation</span>
+                </a>
+            </li>
+            
+            <!-- Logout -->
+            <li class="absolute bottom-0 left-0 w-full p-4 border-t border-gray-200">
+                <a href="{{ path('app_logout') }}" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
+                    <i class="fas fa-sign-out-alt w-5 h-5 text-red-500 transition duration-75 group-hover:text-red-600"></i>
+                    <span class="ml-3 text-red-600">Déconnexion</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</aside>
+
+<!-- Overlay effect on mobile -->
+<div class="fixed inset-0 z-30 bg-gray-900 bg-opacity-50 hidden" id="sidebar-backdrop"></div>
+
+<script>
+    // Gestion du menu mobile
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('logo-sidebar');
+        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+        const toggleSidebar = document.getElementById('toggle-sidebar');
+        
+        // Toggle sidebar on mobile
+        toggleSidebar.addEventListener('click', function() {
+            sidebar.classList.toggle('-translate-x-full');
+            sidebarBackdrop.classList.toggle('hidden');
+        });
+        
+        // Close sidebar when clicking on backdrop
+        sidebarBackdrop.addEventListener('click', function() {
+            sidebar.classList.add('-translate-x-full');
+            sidebarBackdrop.classList.add('hidden');
+        });
+        
+        // Initialize dropdowns
+        document.querySelectorAll('[data-collapse-toggle]').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('aria-controls');
+                const target = document.getElementById(targetId);
+                const icon = this.querySelector('i:last-child');
+                
+                target.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
+        });
+    });
+</script>

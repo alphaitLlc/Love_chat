@@ -1,0 +1,361 @@
+{#
+    Table Component
+    
+    Paramètres disponibles :
+    - columns: Tableau des colonnes du tableau [ {key: 'id', label: 'ID', sortable: true}, ... ]
+    - items: Tableau des éléments à afficher
+    - currentPage: Page actuelle (par défaut: 1)
+    - itemsPerPage: Nombre d'éléments par page (par défaut: 10)
+    - totalItems: Nombre total d'éléments (pour la pagination)
+    - sortBy: Colonne de tri actuelle
+    - sortDirection: Direction du tri (asc/desc)
+    - searchQuery: Terme de recherche actuel
+    - actions: Actions disponibles pour chaque ligne (edit, delete, view, etc.)
+    - bulkActions: Actions groupées disponibles
+    - showCheckboxes: Afficher les cases à cocher pour la sélection multiple (par défaut: true)
+#}
+
+{% set currentPage = currentPage|default(1) %}
+{% set itemsPerPage = itemsPerPage|default(10) %}
+{% set totalPages = (totalItems / itemsPerPage)|round(0, 'ceil') %}
+{% set sortDirection = sortDirection|default('asc') %}
+{% set showCheckboxes = showCheckboxes is not defined ? true : showCheckboxes %}
+
+<div class="bg-white shadow rounded-lg overflow-hidden">
+    <!-- Table Header with Search and Actions -->
+    <div class="p-4 border-b border-gray-200 sm:flex sm:items-center sm:justify-between">
+        <!-- Search -->
+        <div class="relative max-w-xs">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fas fa-search text-gray-400"></i>
+            </div>
+            <input type="text" 
+                   id="table-search" 
+                   name="search" 
+                   value="{{ searchQuery|default('') }}" 
+                   placeholder="Rechercher..." 
+                   class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                   hx-get="{{ app.request.pathinfo }}" 
+                   hx-trigger="keyup changed delay:500ms"
+                   hx-target="#table-container"
+                   hx-select="#table-container"
+                   hx-params="search, sortBy, sortDirection"
+                   hx-push-url="true">
+        </div>
+        
+        <!-- Bulk Actions -->
+        {% if bulkActions is defined and bulkActions|length > 0 and showCheckboxes %}
+        <div class="mt-3 sm:mt-0 sm:ml-4">
+            <div class="flex items-center space-x-2">
+                <select id="bulk-action" 
+                        class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                        hx-post="{{ path(app.request.attributes.get('_route'), app.request.query.all) }}"
+                        hx-trigger="change"
+                        hx-include="[name='selectedItems']:checked"
+                        hx-params="selectedItems, bulkAction"
+                        name="bulkAction">
+                    <option value="">Actions groupées</option>
+                    {% for action in bulkActions %}
+                        <option value="{{ action.key }}">{{ action.label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Add New Button -->
+        {% if addRoute is defined %}
+        <div class="mt-3 sm:mt-0">
+            <a href="{{ path(addRoute) }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <i class="fas fa-plus mr-2"></i> Ajouter
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Table -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    {% if showCheckboxes %}
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <input type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" 
+                               @click="$refs.selectAll.checked = !$refs.selectAll.checked; 
+                                      document.querySelectorAll('input[name=\'selectedItems\']').forEach(checkbox => { 
+                                          checkbox.checked = $refs.selectAll.checked; 
+                                      });">
+                        <input type="checkbox" class="hidden" x-ref="selectAll">
+                    </th>
+                    {% endif %}
+                    
+                    {% for column in columns %}
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {% if column.sortable %}
+                        <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({
+                            sortBy: column.key, 
+                            sortDirection: (sortBy == column.key and sortDirection == 'asc') ? 'desc' : 'asc'
+                        })) }}" 
+                           class="flex items-center group"
+                           hx-get="{{ app.request.pathinfo }}" 
+                           hx-trigger="click"
+                           hx-target="#table-container"
+                           hx-select="#table-container"
+                           hx-params="search, sortBy, sortDirection"
+                           hx-push-url="true">
+                            {{ column.label }}
+                            {% if sortBy == column.key %}
+                                <i class="fas fa-sort-{{ sortDirection == 'asc' ? 'up' : 'down' }} ml-1 text-indigo-500"></i>
+                            {% else %}
+                                <i class="fas fa-sort ml-1 text-gray-300 group-hover:text-gray-400"></i>
+                            {% endif %}
+                        </a>
+                        {% else %}
+                            {{ column.label }}
+                        {% endif %}
+                    </th>
+                    {% endfor %}
+                    
+                    {% if actions is defined and actions|length > 0 %}
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                    </th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% if items|length > 0 %}
+                    {% for item in items %}
+                    <tr class="hover:bg-gray-50">
+                        {% if showCheckboxes %}
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="checkbox" name="selectedItems" value="{{ item.id }}" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                        </td>
+                        {% endif %}
+                        
+                        {% for column in columns %}
+                            {% set value = attribute(item, column.key) %}
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if column.type is defined and column.type == 'date' and value is not null %}
+                                    {{ value|date('d/m/Y H:i') }}
+                                {% elseif column.type is defined and column.type == 'boolean' %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ value ? 'Oui' : 'Non' }}
+                                    </span>
+                                {% elseif column.type is defined and column.type == 'status' %}
+                                    {% set statusConfig = {
+                                        'active': {'class': 'bg-green-100 text-green-800'},
+                                        'inactive': {'class': 'bg-gray-100 text-gray-800'},
+                                        'pending': {'class': 'bg-yellow-100 text-yellow-800'},
+                                        'banned': {'class': 'bg-red-100 text-red-800'}
+                                    } %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ statusConfig[value].class|default('bg-gray-100 text-gray-800') }}">
+                                        {{ value|capitalize }}
+                                    </span>
+                                {% elseif column.template is defined %}
+                                    {% include column.template with {item: item, value: value} %}
+                                {% else %}
+                                    {{ value|default('-') }}
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                        
+                        {% if actions is defined and actions|length > 0 %}
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex justify-end space-x-2">
+                                {% for action in actions %}
+                                    {% if action.condition is not defined or action.condition(item) %}
+                                        <a href="{{ path(action.route, {id: item.id}) }}" 
+                                           class="text-{{ action.color|default('indigo') }}-600 hover:text-{{ action.color|default('indigo') }}-900 {{ action.class|default('') }}"
+                                           {% if action.confirm is defined %}onclick="return confirm('{{ action.confirm }}')"{% endif %}
+                                           {% if action.target is defined %}target="{{ action.target }}"{% endif %}>
+                                            <i class="fas fa-{{ action.icon }}"></i>
+                                            {% if not action.hideLabel %}<span class="sr-only">{{ action.label }}</span>{% endif %}
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="{{ columns|length + (showCheckboxes ? 1 : 0) + (actions is defined and actions|length > 0 ? 1 : 0) }}" class="px-6 py-4 text-center text-sm text-gray-500">
+                            Aucun élément trouvé
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if totalPages > 1 %}
+    <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+        <div class="flex-1 flex justify-between sm:hidden">
+            <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({page: currentPage > 1 ? currentPage - 1 : 1})) }}" 
+               class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+               {% if currentPage == 1 %}disabled{% endif %}
+               hx-get="{{ app.request.pathinfo }}" 
+               hx-trigger="click"
+               hx-target="#table-container"
+               hx-select="#table-container"
+               hx-params="search, sortBy, sortDirection, page"
+               hx-push-url="true">
+                Précédent
+            </a>
+            <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({page: currentPage < totalPages ? currentPage + 1 : totalPages})) }}" 
+               class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+               {% if currentPage == totalPages %}disabled{% endif %}
+               hx-get="{{ app.request.pathinfo }}" 
+               hx-trigger="click"
+               hx-target="#table-container"
+               hx-select="#table-container"
+               hx-params="search, sortBy, sortDirection, page"
+               hx-push-url="true">
+                Suivant
+            </a>
+        </div>
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+                <p class="text-sm text-gray-700">
+                    Affichage de <span class="font-medium">{{ ((currentPage - 1) * itemsPerPage) + 1 }}</span>
+                    à <span class="font-medium">{{ min(currentPage * itemsPerPage, totalItems) }}</span>
+                    sur <span class="font-medium">{{ totalItems }}</span> résultats
+                </p>
+            </div>
+            <div>
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    <!-- Previous Page Link -->
+                    <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({page: currentPage > 1 ? currentPage - 1 : 1})) }}" 
+                       class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                       {% if currentPage == 1 %}disabled{% endif %}
+                       hx-get="{{ app.request.pathinfo }}" 
+                       hx-trigger="click"
+                       hx-target="#table-container"
+                       hx-select="#table-container"
+                       hx-params="search, sortBy, sortDirection, page"
+                       hx-push-url="true">
+                        <span class="sr-only">Précédent</span>
+                        <i class="fas fa-chevron-left h-5 w-5"></i>
+                    </a>
+                    
+                    <!-- Page Numbers -->
+                    {% set maxVisiblePages = 5 %}
+                    {% set startPage = max(1, min(currentPage - 2, totalPages - maxVisiblePages + 1)) %}
+                    {% set endPage = min(startPage + maxVisiblePages - 1, totalPages) %}
+                    
+                    {% if startPage > 1 %}
+                        <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({page: 1})) }}" 
+                           class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                           hx-get="{{ app.request.pathinfo }}" 
+                           hx-trigger="click"
+                           hx-target="#table-container"
+                           hx-select="#table-container"
+                           hx-params="search, sortBy, sortDirection, page"
+                           hx-push-url="true">
+                            1
+                        </a>
+                        {% if startPage > 2 %}
+                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                                ...
+                            </span>
+                        {% endif %}
+                    {% endif %}
+                    
+                    {% for i in startPage..endPage %}
+                        <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({page: i})) }}" 
+                           class="relative inline-flex items-center px-4 py-2 border {{ i == currentPage ? 'bg-indigo-50 border-indigo-500 text-indigo-600' : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50' }} text-sm font-medium"
+                           hx-get="{{ app.request.pathinfo }}" 
+                           hx-trigger="click"
+                           hx-target="#table-container"
+                           hx-select="#table-container"
+                           hx-params="search, sortBy, sortDirection, page"
+                           hx-push-url="true">
+                            {{ i }}
+                        </a>
+                    {% endfor %}
+                    
+                    {% if endPage < totalPages %}
+                        {% if endPage < totalPages - 1 %}
+                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                                ...
+                            </span>
+                        {% endif %}
+                        <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({page: totalPages})) }}" 
+                           class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                           hx-get="{{ app.request.pathinfo }}" 
+                           hx-trigger="click"
+                           hx-target="#table-container"
+                           hx-select="#table-container"
+                           hx-params="search, sortBy, sortDirection, page"
+                           hx-push-url="true">
+                            {{ totalPages }}
+                        </a>
+                    {% endif %}
+                    
+                    <!-- Next Page Link -->
+                    <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({page: currentPage < totalPages ? currentPage + 1 : totalPages})) }}" 
+                       class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                       {% if currentPage == totalPages %}disabled{% endif %}
+                       hx-get="{{ app.request.pathinfo }}" 
+                       hx-trigger="click"
+                       hx-target="#table-container"
+                       hx-select="#table-container"
+                       hx-params="search, sortBy, sortDirection, page"
+                       hx-push-url="true">
+                        <span class="sr-only">Suivant</span>
+                        <i class="fas fa-chevron-right h-5 w-5"></i>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Hidden form for HTMX requests -->
+<form id="table-form" class="hidden">
+    <input type="hidden" name="page" value="{{ currentPage }}">
+    <input type="hidden" name="sortBy" value="{{ sortBy|default('') }}">
+    <input type="hidden" name="sortDirection" value="{{ sortDirection }}">
+</form>
+
+<script>
+    // Gestion des événements HTMX pour la pagination et le tri
+    document.body.addEventListener('htmx:configRequest', function(evt) {
+        // Ajouter les paramètres de formulaire à la requête HTMX
+        const formData = new FormData(document.getElementById('table-form'));
+        const searchInput = document.getElementById('table-search');
+        
+        // Ajouter la recherche si elle existe
+        if (searchInput && searchInput.value) {
+            formData.set('search', searchInput.value);
+        }
+        
+        // Fusionner avec les paramètres existants
+        for (let [key, value] of formData.entries()) {
+            evt.detail.parameters[key] = value;
+        }
+    });
+    
+    // Mettre à jour les champs cachés lors du tri
+    document.querySelectorAll('th a[href*="sortBy="]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const url = new URL(this.href);
+            document.querySelector('input[name="sortBy"]').value = url.searchParams.get('sortBy');
+            document.querySelector('input[name="sortDirection"]').value = url.searchParams.get('sortDirection');
+            document.querySelector('input[name="page"]').value = 1; // Reset à la première page
+            
+            // Déclencher la requête HTMX
+            htmx.trigger('#table-container', 'refreshTable');
+        });
+    });
+    
+    // Rafraîchir le tableau avec HTMX
+    function refreshTable() {
+        htmx.trigger('#table-container', 'refreshTable');
+    }
+</script>

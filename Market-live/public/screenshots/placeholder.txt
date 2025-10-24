@@ -1,0 +1,2 @@
+Ce dossier contiendra les captures d'écran de l'application.
+Remplacez ce fichier par les captures d'écran réelles aux dimensions spécifiées dans le manifest.json.

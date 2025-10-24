@@ -1,0 +1,198 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}{{ customer.firstName }} {{ customer.lastName }} - Fiche client{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <div class="flex items-center">
+            <a href="{{ path('app_customers') }}" class="text-gray-400 hover:text-gray-600 mr-4">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1 class="page-title">
+                {{ customer.firstName }} {{ customer.lastName }}
+                <span class="text-gray-500 text-lg font-normal ml-2">#{{ customer.id }}</span>
+            </h1>
+        </div>
+        <div class="page-actions">
+            <a href="{{ path('app_customers_edit', {id: customer.id}) }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-edit mr-2"></i> Modifier
+            </a>
+            <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-envelope mr-2"></i> Envoyer un message
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Informations personnelles -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Carte informations -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Informations personnelles</h2>
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ customer.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                        {{ customer.isActive ? 'Actif' : 'Inactif' }}
+                    </span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 mb-2">Informations de contact</h3>
+                        <div class="space-y-1">
+                            <p class="text-sm text-gray-900">{{ customer.firstName }} {{ customer.lastName }}</p>
+                            <p class="text-sm text-gray-500">{{ customer.email }}</p>
+                            {% if customer.phone %}
+                                <p class="text-sm text-gray-500">{{ customer.phone }}</p>
+                            {% endif %}
+                            {% if customer.company %}
+                                <p class="text-sm text-gray-500 mt-2">
+                                    <span class="font-medium">Société :</span> {{ customer.company }}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 mb-2">Date d'inscription</h3>
+                        <p class="text-sm text-gray-900">
+                            {{ customer.createdAt|date('d/m/Y à H:i') }}
+                            <span class="text-gray-500">({{ customer.createdAt|ago }} )</span>
+                        </p>
+                        
+                        <h3 class="text-sm font-medium text-gray-500 mt-4 mb-2">Dernière connexion</h3>
+                        <p class="text-sm text-gray-900">
+                            {{ customer.lastLogin ? customer.lastLogin|date('d/m/Y à H:i') : 'Jamais' }}
+                            {% if customer.lastLogin %}
+                                <span class="text-gray-500">({{ customer.lastLogin|ago }})</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dernières commandes -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Dernières commandes</h2>
+                    <a href="{{ path('app_orders') }}?customer_id={{ customer.id }}" class="text-sm text-blue-600 hover:text-blue-900">
+                        Voir tout
+                    </a>
+                </div>
+                {% if customer.orders|length > 0 %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Commande
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Date
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Statut
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Total
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for order in customer.orders|slice(0, 5) %}
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <a href="#" class="text-blue-600 hover:text-blue-900">
+                                                #{{ order.id }}
+                                            </a>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ order.createdAt|date('d/m/Y') }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                {{ order.status == 'completed' ? 'bg-green-100 text-green-800' : '' }}
+                                                {{ order.status == 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
+                                                {{ order.status == 'cancelled' ? 'bg-red-100 text-red-800' : '' }}
+                                                {{ order.status == 'processing' ? 'bg-blue-100 text-blue-800' : '' }}
+                                                ">
+                                                {{ order.status|trans }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            {{ order.total|format_currency('EUR') }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="p-6">
+                        <p class="text-sm text-gray-500">Aucune commande pour le moment.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Statistiques et historique -->
+        <div class="space-y-6">
+            <!-- Carte statistiques -->
+            <div class="card">
+                <h2 class="card-title mb-4">Statistiques</h2>
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-sm text-gray-500">Commandes totales</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{ customer.orders|length }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Dépense totale</p>
+                        <p class="text-2xl font-semibold text-gray-900">
+                            {{ customer.totalSpent|default(0)|format_currency('EUR') }}
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Panier moyen</p>
+                        <p class="text-2xl font-semibold text-gray-900">
+                            {{ (customer.orders|length > 0 ? customer.totalSpent / customer.orders|length : 0)|format_currency('EUR') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes internes -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Notes internes</h2>
+                    <button type="button" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <i class="fas fa-plus mr-1"></i> Ajouter une note
+                    </button>
+                </div>
+                <div class="p-6 space-y-4">
+                    {% if customer.notes|length > 0 %}
+                        {% for note in customer.notes %}
+                            <div class="border-l-4 border-blue-200 pl-4 py-1">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-medium">{{ note.author }}</p>
+                                    <span class="text-xs text-gray-500">{{ note.createdAt|date('d/m/Y H:i') }}</span>
+                                </div>
+                                <p class="text-sm text-gray-700 mt-1">{{ note.content }}</p>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-sm text-gray-500">Aucune note pour le moment.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block page_javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialisation des tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,115 @@
+export const movieDetails = {
+  adult: false,
+  backdrop_path: "/628Dep6AxEtDxjZoGP78TsOxYbK.jpg",
+  belongs_to_collection: {
+    id: 87359,
+    name: "Mission : Impossible - Saga",
+    poster_path: "/5nUgyjBem5QctwzQoDyJ3kuE7xh.jpg",
+    backdrop_path: "/jYl0UuJFcmhymv9ZNO14lPLDY1Z.jpg",
+  },
+  budget: 291000000,
+  genres: [
+    {
+      id: 28,
+      name: "Action",
+    },
+    {
+      id: 53,
+      name: "Thriller",
+    },
+  ],
+  homepage: "https://www.missionimpossible-lefilm.fr",
+  id: 575264,
+  imdb_id: "tt9603212",
+  original_language: "en",
+  original_title: "Mission: Impossible - Dead Reckoning Part One",
+  overview:
+    "Ethan Hunt et son équipe de l’IMF se lancent dans leur mission la plus périlleuse à ce jour : traquer une effroyable nouvelle arme avant que celle-ci ne tombe entre de mauvaises mains et menace l’humanité entière. Le contrôle du futur et le destin du monde sont en jeu. Alors que les forces obscures de son passé ressurgissent, Ethan s’engage dans une course mortelle autour du globe. Confronté à un puissant et énigmatique ennemi, Ethan réalise que rien ne peut se placer au-dessus de sa mission - pas même la vie de ceux qu’il aime.",
+  popularity: 2219.346,
+  poster_path: "/nVIUNhVsG0HDwyOJihlpsSZ8SHR.jpg",
+  production_companies: [
+    {
+      id: 4,
+      logo_path: "/gz66EfNoYPqHTYI4q9UEN4CbHRc.png",
+      name: "Paramount",
+      origin_country: "US",
+    },
+    {
+      id: 82819,
+      logo_path: "/gXfFl9pRPaoaq14jybEn1pHeldr.png",
+      name: "Skydance",
+      origin_country: "US",
+    },
+    {
+      id: 21777,
+      logo_path: null,
+      name: "TC Productions",
+      origin_country: "US",
+    },
+  ],
+  production_countries: [
+    {
+      iso_3166_1: "US",
+      name: "United States of America",
+    },
+  ],
+  release_date: "2023-07-08",
+  revenue: 567148955,
+  runtime: 163,
+  spoken_languages: [
+    {
+      english_name: "French",
+      iso_639_1: "fr",
+      name: "Français",
+    },
+    {
+      english_name: "English",
+      iso_639_1: "en",
+      name: "English",
+    },
+    {
+      english_name: "Italian",
+      iso_639_1: "it",
+      name: "Italiano",
+    },
+    {
+      english_name: "Russian",
+      iso_639_1: "ru",
+      name: "Pусский",
+    },
+  ],
+  status: "Released",
+  tagline: "Nous partageons tous le même sort.",
+  title: "Mission : Impossible - Dead Reckoning Partie 1",
+  video: false,
+  vote_average: 7.603,
+  vote_count: 2362,
+  videos: {
+    results: [
+      {
+        iso_639_1: "fr",
+        iso_3166_1: "FR",
+        name: "Bande-annonce VF",
+        key: "kz34RaRBczI",
+        site: "YouTube",
+        size: 1080,
+        type: "Trailer",
+        official: true,
+        published_at: "2023-05-17T13:04:17.000Z",
+        id: "6464dd8844a42400e4b84249",
+      },
+      {
+        iso_639_1: "fr",
+        iso_3166_1: "FR",
+        name: "Bande-annonce VF",
+        key: "pPPCoh8RNXM",
+        site: "YouTube",
+        size: 1080,
+        type: "Trailer",
+        official: true,
+        published_at: "2022-05-23T16:39:11.000Z",
+        id: "628cbbd99a643500aaf8da89",
+      },
+    ],
+  },
+};

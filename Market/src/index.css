@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Styles spécifiques pour le mode PWA */
+.standalone-mode {
+  /* Éviter les problèmes de débordement sur iOS */
+  -webkit-overflow-scrolling: touch;
+  /* Désactiver le zoom sur double-tap */
+  touch-action: manipulation;
+}
+
+/* Améliorer l'apparence sur les appareils mobiles */
+@media (max-width: 768px) {
+  html, body {
+    overscroll-behavior-y: none;
+  }
+  
+  /* Éviter le surlignage bleu sur les éléments cliquables */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Styles pour les boutons d'installation */
+.pwa-install-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #3B82F6;
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.pwa-install-button:hover {
+  background-color: #2563EB;
+}
+
+/* Styles pour la barre d'état iOS */
+@supports (-webkit-touch-callout: none) {
+  .standalone-mode {
+    /* Ajouter un padding en haut pour la barre d'état iOS */
+    padding-top: env(safe-area-inset-top);
+    /* Ajouter un padding en bas pour la barre de navigation iOS */
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Styles pour les notifications d'installation */
+.pwa-install-prompt {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 1rem;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

@@ -1,0 +1,22 @@
+parameters:
+    # Paramètres généraux
+    openai.api_key: '%env(OPENAI_API_KEY)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    
+    # Configuration pour OpenApi
+    App\Service\OpenApi\OpenApiFactory:
+        decorates: 'api_platform.openapi.factory'
+        arguments: ['@.inner']
+        autoconfigure: false
+
+    # Configuration par défaut pour tous les services
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'

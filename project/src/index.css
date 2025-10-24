@@ -1,0 +1,225 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+
+/* Importer la police Whitney utilisée par Discord */
+@font-face {
+  font-family: 'Whitney';
+  font-style: normal;
+  font-weight: 300;
+  src: url('https://discord.com/assets/6c6374bad0b0b6d204d8d6dc4a18d820.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Whitney';
+  font-style: normal;
+  font-weight: 400;
+  src: url('https://discord.com/assets/e8acd7d9bf6208f99350.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Whitney';
+  font-style: normal;
+  font-weight: 500;
+  src: url('https://discord.com/assets/3bdef1251a424500c1b3a78dea9b7e57.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Whitney';
+  font-style: normal;
+  font-weight: 600;
+  src: url('https://discord.com/assets/be0060dafb7a0e31d2a1ca17c0708636.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Whitney';
+  font-style: normal;
+  font-weight: 700;
+  src: url('https://discord.com/assets/8e12fb4f14d9c4592eb8ec9f22337b04.woff') format('woff');
+}
+
+/* Styles de base */
+body {
+  @apply bg-discord-dark text-discord-lighter;
+  font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* Styles pour le mode PWA */
+.standalone-mode {
+  -webkit-overflow-scrolling: touch;
+  touch-action: manipulation;
+  height: 100vh;
+  max-height: -webkit-fill-available;
+}
+
+/* Barre de défilement personnalisée */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--discord-darker);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--discord-darkest);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4f545c;
+}
+
+/* Animation de chargement */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Styles pour les transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Styles pour les notifications */
+.toast {
+  @apply bg-discord-darker border border-discord-darkest text-discord-lighter;
+}
+
+/* Styles pour les formulaires */
+input, textarea, select {
+  @apply bg-discord-darkest border border-discord-darker rounded px-3 py-2 text-discord-lighter 
+         focus:outline-none focus:ring-2 focus:ring-discord-accent focus:border-transparent
+         placeholder-discord-light;
+}
+
+/* Styles pour les boutons */
+.btn {
+  @apply px-4 py-2 rounded font-medium transition-colors duration-200;
+}
+
+.btn-primary {
+  @apply bg-discord-accent text-white hover:bg-discord-accent-hover;
+}
+
+.btn-secondary {
+  @apply bg-discord-darker text-discord-light hover:bg-discord-darkest;
+}
+
+/* Styles pour les cartes */
+.card {
+  @apply bg-discord-darker rounded-lg p-4 shadow-lg border border-discord-darkest;
+}
+
+/* Styles pour les badges */
+.badge {
+  @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge-primary {
+  @apply bg-discord-accent text-white;
+}
+
+.badge-success {
+  @apply bg-discord-green text-white;
+}
+
+.badge-danger {
+  @apply bg-discord-red text-white;
+}
+
+.badge-warning {
+  @apply bg-discord-yellow text-discord-darkest;
+}
+
+/* Styles pour les messages */
+.message {
+  @apply flex px-4 py-1 hover:bg-discord-darker transition-colors duration-150;
+}
+
+.message-avatar {
+  @apply w-10 h-10 rounded-full mt-1 mr-3 flex-shrink-0;
+}
+
+.message-content {
+  @apply flex-1 min-w-0;
+}
+
+.message-username {
+  @apply font-semibold text-discord-lightest mr-2;
+}
+
+.message-timestamp {
+  @apply text-xs text-discord-light;
+}
+
+.message-text {
+  @apply text-discord-lighter;
+}
+
+/* Améliorer l'apparence sur les appareils mobiles */
+@media (max-width: 768px) {
+  html, body {
+    overscroll-behavior-y: none;
+  }
+  
+  /* Éviter le surlignage bleu sur les éléments cliquables */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Styles pour les boutons d'installation */
+.pwa-install-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #3B82F6;
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.pwa-install-button:hover {
+  background-color: #2563EB;
+}
+
+/* Styles pour la barre d'état iOS */
+@supports (-webkit-touch-callout: none) {
+  .standalone-mode {
+    /* Ajouter un padding en haut pour la barre d'état iOS */
+    padding-top: env(safe-area-inset-top);
+    /* Ajouter un padding en bas pour la barre de navigation iOS */
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Styles pour les notifications d'installation */
+.pwa-install-prompt {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 1rem;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

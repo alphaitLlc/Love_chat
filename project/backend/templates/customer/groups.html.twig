@@ -1,0 +1,400 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Groupes de clients - Administration{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h1 class="page-title">Groupes de clients</h1>
+        <div class="page-actions">
+            <button type="button" id="add-group-btn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-plus mr-2"></i> Nouveau groupe
+            </button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Liste des groupes</h2>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-400"></i>
+                </div>
+                <input type="text" id="search-groups" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Rechercher un groupe...">
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Nom
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Description
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Remise
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Clients
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Statut
+                        </th>
+                        <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">Actions</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200" id="groups-list">
+                    {% for group in groups %}
+                        <tr class="group-item" data-id="{{ group.id }}" data-name="{{ group.name|lower }}" data-description="{{ group.description|default('')|lower }}">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">{{ group.name }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-500 max-w-xs truncate">{{ group.description|default('Aucune description') }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if group.discount > 0 %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        -{{ group.discount }}%
+                                    </span>
+                                {% else %}
+                                    <span class="text-sm text-gray-500">Aucune</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    {{ group.customers|length }} client(s)
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ group.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                    {{ group.isActive ? 'Actif' : 'Inactif' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button type="button" class="text-blue-600 hover:text-blue-900 edit-group" data-id="{{ group.id }}" title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="text-red-600 hover:text-red-900 delete-group" data-id="{{ group.id }}" title="Supprimer">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
+                                Aucun groupe trouvé. Commencez par en créer un.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div class="flex-1 flex justify-between sm:hidden">
+                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Précédent
+                </a>
+                <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Suivant
+                </a>
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">
+                        Affichage de <span class="font-medium">1</span> à <span class="font-medium">{{ groups|length }}</span> sur <span class="font-medium">{{ groups|length }}</span> résultats
+                    </p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <span class="sr-only">Précédent</span>
+                            <i class="fas fa-chevron-left h-5 w-5"></i>
+                        </a>
+                        <a href="#" aria-current="page" class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                            1
+                        </a>
+                        <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                            2
+                        </a>
+                        <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <span class="sr-only">Suivant</span>
+                            <i class="fas fa-chevron-right h-5 w-5"></i>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ajouter/Modifier un groupe -->
+    <div id="group-modal" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                <div>
+                    <div class="mt-3 text-center sm:mt-5">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                            <span id="modal-title-text">Nouveau groupe</span>
+                        </h3>
+                        <div class="mt-2">
+                            <form id="group-form" class="space-y-4">
+                                <input type="hidden" id="group_id" name="id" value="">
+                                <div>
+                                    <label for="group_name" class="block text-sm font-medium text-gray-700 text-left">Nom du groupe *</label>
+                                    <input type="text" name="name" id="group_name" required
+                                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    <p class="mt-1 text-sm text-red-600" id="group_name_error"></p>
+                                </div>
+                                <div>
+                                    <label for="group_description" class="block text-sm font-medium text-gray-700 text-left">Description</label>
+                                    <textarea id="group_description" name="description" rows="3"
+                                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                                </div>
+                                <div>
+                                    <label for="group_discount" class="block text-sm font-medium text-gray-700 text-left">Remise (%)</label>
+                                    <input type="number" name="discount" id="group_discount" min="0" max="100" step="0.01"
+                                           class="mt-1 block w-32 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    <p class="mt-1 text-sm text-gray-500">Pourcentage de remise appliqué aux produits pour ce groupe.</p>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="group_is_active" name="is_active" type="checkbox" 
+                                               class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" checked>
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="group_is_active" class="font-medium text-gray-700">Groupe actif</label>
+                                        <p class="text-gray-500">Désactivez pour masquer ce groupe des sélections.</p>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                    <button type="button" id="save-group" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm">
+                        Enregistrer
+                    </button>
+                    <button type="button" id="cancel-group" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm">
+                        Annuler
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block page_javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Variables globales
+            const modal = document.getElementById('group-modal');
+            const modalTitle = document.getElementById('modal-title-text');
+            const groupForm = document.getElementById('group-form');
+            const addGroupBtn = document.getElementById('add-group-btn');
+            const saveGroupBtn = document.getElementById('save-group');
+            const cancelGroupBtn = document.getElementById('cancel-group');
+            const searchInput = document.getElementById('search-groups');
+            
+            // Fonction pour filtrer les groupes
+            function filterGroups(searchTerm) {
+                const rows = document.querySelectorAll('.group-item');
+                searchTerm = searchTerm.toLowerCase();
+                
+                rows.forEach(row => {
+                    const name = row.getAttribute('data-name');
+                    const description = row.getAttribute('data-description');
+                    
+                    if (name.includes(searchTerm) || description.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Recherche de groupes
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    filterGroups(this.value);
+                });
+            }
+            
+            // Ouvrir le modal d'ajout
+            if (addGroupBtn) {
+                addGroupBtn.addEventListener('click', function() {
+                    modalTitle.textContent = 'Nouveau groupe';
+                    groupForm.reset();
+                    document.getElementById('group_id').value = '';
+                    document.getElementById('group_is_active').checked = true;
+                    document.getElementById('group_discount').value = '0';
+                    document.getElementById('group_name_error').textContent = '';
+                    modal.classList.remove('hidden');
+                });
+            }
+            
+            // Gérer l'édition d'un groupe
+            document.querySelectorAll('.edit-group').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const groupId = this.getAttribute('data-id');
+                    const groupRow = this.closest('tr');
+                    
+                    // Récupérer les données du groupe (à remplacer par une requête AJAX en production)
+                    const groupData = {
+                        id: groupId,
+                        name: groupRow.querySelector('td:first-child .text-sm:first-child').textContent.trim(),
+                        description: groupRow.querySelector('td:nth-child(2)').textContent.trim(),
+                        discount: groupRow.querySelector('td:nth-child(3) .bg-green-100') ? 
+                                parseFloat(groupRow.querySelector('td:nth-child(3) .bg-green-100').textContent.replace('-', '').replace('%', '')) : 0,
+                        is_active: groupRow.querySelector('td:nth-child(5) .bg-green-100') !== null
+                    };
+                    
+                    // Remplir le formulaire
+                    modalTitle.textContent = 'Modifier le groupe';
+                    document.getElementById('group_id').value = groupData.id;
+                    document.getElementById('group_name').value = groupData.name;
+                    document.getElementById('group_description').value = groupData.description;
+                    document.getElementById('group_discount').value = groupData.discount;
+                    document.getElementById('group_is_active').checked = groupData.is_active;
+                    document.getElementById('group_name_error').textContent = '';
+                    
+                    // Afficher le modal
+                    modal.classList.remove('hidden');
+                });
+            });
+            
+            // Gérer la suppression d'un groupe
+            document.querySelectorAll('.delete-group').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (confirm('Êtes-vous sûr de vouloir supprimer ce groupe ? Cette action est irréversible.')) {
+                        const groupId = this.getAttribute('data-id');
+                        // Envoyer une requête de suppression (à implémenter)
+                        fetch(`/admin/customer-groups/${groupId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Supprimer la ligne du tableau
+                                document.querySelector(`.group-item[data-id="${groupId}"]`).remove();
+                                // Afficher un message de succès
+                                showToast('Groupe supprimé avec succès', 'success');
+                            } else {
+                                showToast('Une erreur est survenue lors de la suppression', 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erreur:', error);
+                            showToast('Une erreur est survenue', 'error');
+                        });
+                    }
+                });
+            });
+            
+            // Enregistrer le groupe
+            if (saveGroupBtn) {
+                saveGroupBtn.addEventListener('click', function() {
+                    const formData = new FormData(groupForm);
+                    const groupData = Object.fromEntries(formData.entries());
+                    const groupId = document.getElementById('group_id').value;
+                    const isNew = !groupId;
+                    
+                    // Validation
+                    if (!groupData.name.trim()) {
+                        document.getElementById('group_name_error').textContent = 'Le nom du groupe est requis';
+                        return;
+                    }
+                    
+                    // Convertir les valeurs booléennes
+                    groupData.is_active = document.getElementById('group_is_active').checked;
+                    
+                    // URL et méthode en fonction de l'action (création ou mise à jour)
+                    const url = isNew 
+                        ? '/admin/customer-groups'
+                        : `/admin/customer-groups/${groupId}`;
+                    const method = isNew ? 'POST' : 'PUT';
+                    
+                    // Envoyer les données au serveur
+                    fetch(url, {
+                        method: method,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(groupData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Fermer le modal et recharger la page
+                            modal.classList.add('hidden');
+                            window.location.reload();
+                        } else {
+                            // Afficher les erreurs de validation
+                            if (data.errors) {
+                                for (const [field, message] of Object.entries(data.errors)) {
+                                    const errorElement = document.getElementById(`group_${field}_error`);
+                                    if (errorElement) {
+                                        errorElement.textContent = message;
+                                    }
+                                }
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        showToast('Une erreur est survenue', 'error');
+                    });
+                });
+            }
+            
+            // Annuler et fermer le modal
+            if (cancelGroupBtn) {
+                cancelGroupBtn.addEventListener('click', function() {
+                    modal.classList.add('hidden');
+                });
+            }
+            
+            // Fermer le modal en cliquant en dehors
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+            
+            // Fonction utilitaire pour afficher des notifications
+            function showToast(message, type = 'success') {
+                // Implémentez votre propre système de notification ou utilisez une bibliothèque comme Toastify
+                console.log(`${type.toUpperCase()}: ${message}`);
+                // Exemple avec Toastify.js
+                // Toastify({
+                //     text: message,
+                //     duration: 3000,
+                //     gravity: 'top',
+                //     position: 'right',
+                //     backgroundColor: type === 'success' ? '#10B981' : '#EF4444',
+                // }).showToast();
+            }
+        });
+    </script>
+{% endblock %}

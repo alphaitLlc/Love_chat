@@ -1,0 +1,178 @@
+version: '3.8'
+
+services:
+  # Frontend Service
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: linkmarket_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    volumes:
+      - ./ssl:/etc/ssl:ro
+    networks:
+      - linkmarket
+
+  # Backend Service (using existing configuration)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: linkmarket_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./backend:/var/www
+      - ./backend/docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - linkmarket
+    depends_on:
+      - db
+      - redis
+
+  # Nginx Service for Backend
+  webserver:
+    image: nginx:alpine
+    container_name: linkmarket_nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+      - "8443:443"
+    volumes:
+      - ./backend:/var/www
+      - ./backend/docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - linkmarket
+    depends_on:
+      - backend
+
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: linkmarket_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: linkmarket_db
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_USER: linkmarket_user
+      MYSQL_PASSWORD: linkmarket_password
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./backend/docker/mysql/my.cnf:/etc/mysql/my.cnf
+    ports:
+      - "3306:3306"
+    networks:
+      - linkmarket
+
+  # Redis for Caching and Sessions
+  redis:
+    image: redis:7-alpine
+    container_name: linkmarket_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    networks:
+      - linkmarket
+
+  # Elasticsearch for Search
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: linkmarket_elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - linkmarket
+
+  # RabbitMQ for Message Queuing
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: linkmarket_rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: linkmarket
+      RABBITMQ_DEFAULT_PASS: linkmarket_password
+    volumes:
+      - rabbitmqdata:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - linkmarket
+
+  # Mercure for Real-time Updates
+  mercure:
+    image: dunglas/mercure
+    container_name: linkmarket_mercure
+    restart: unless-stopped
+    environment:
+      SERVER_NAME: ':80'
+      MERCURE_PUBLISHER_JWT_KEY: 'your-mercure-jwt-secret'
+      MERCURE_SUBSCRIBER_JWT_KEY: 'your-mercure-jwt-secret'
+      MERCURE_EXTRA_DIRECTIVES: |
+        cors_origins http://localhost:3000 http://localhost:8000 http://localhost:80 https://localhost:5173 http://frontend:80 https://frontend:443 https://localhost:443 *
+        anonymous
+        demo
+    ports:
+      - "3000:80"
+    networks:
+      - linkmarket
+
+  # MinIO for Object Storage (S3 Compatible)
+  minio:
+    image: minio/minio
+    container_name: linkmarket_minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: linkmarket
+      MINIO_ROOT_PASSWORD: linkmarket_password
+    volumes:
+      - miniodata:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    networks:
+      - linkmarket
+
+  # Mailhog for Email Testing
+  mailhog:
+    image: mailhog/mailhog
+    container_name: linkmarket_mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - linkmarket
+
+# Docker Networks
+networks:
+  linkmarket:
+    driver: bridge
+
+# Volumes
+volumes:
+  dbdata:
+    driver: local
+  redisdata:
+    driver: local
+  esdata:
+    driver: local
+  rabbitmqdata:
+    driver: local
+  miniodata:
+    driver: local

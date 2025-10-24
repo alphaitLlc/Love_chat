@@ -1,0 +1,65 @@
+api_platform:
+    title: 'LinkMarket API'
+    version: '1.0.0'
+    description: 'API complète pour la plateforme LinkMarket - E-commerce + Réseau Social'
+    
+    # Documentation
+    docs_formats:
+        jsonld: ['application/ld+json']
+        jsonhal: ['application/hal+json']
+        jsonapi: ['application/vnd.api+json']
+        json: ['application/json']
+        xml: ['application/xml', 'text/xml']
+        yaml: ['application/x-yaml']
+        csv: ['text/csv']
+    
+    # Formats
+    formats:
+        jsonld: ['application/ld+json']
+        json: ['application/json']
+        html: ['text/html']
+        jsonhal: ['application/hal+json']
+        jsonapi: ['application/vnd.api+json']
+        xml: ['application/xml', 'text/xml']
+        yaml: ['application/x-yaml']
+        csv: ['text/csv']
+    
+    # Pagination
+    collection:
+        pagination:
+            enabled: true
+            page_parameter_name: page
+            enabled_parameter_name: pagination
+            items_per_page: 20
+            maximum_items_per_page: 100
+            page_parameter_name: page
+            items_per_page_parameter_name: itemsPerPage
+    
+    # Mapping
+    mapping:
+        paths: ['%kernel.project_dir%/src/Entity']
+    
+    # Swagger UI
+    swagger:
+        versions: [3]
+        api_keys:
+            JWT:
+                name: Authorization
+                type: header
+    
+    # OpenAPI
+    openapi:
+        contact:
+            name: LinkMarket API Support
+            url: https://linkmarket.com/support
+            email: support@linkmarket.com
+        license:
+            name: MIT
+            url: https://opensource.org/licenses/MIT
+        servers:
+            - url: https://api.linkmarket.com
+              description: Production server
+            - url: https://staging-api.linkmarket.com
+              description: Staging server
+            - url: http://localhost:8000
+              description: Development server

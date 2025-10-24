@@ -1,0 +1,265 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord - Administration{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .stats-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .recent-activity {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        /* Style personnalisé pour la barre de défilement */
+        .recent-activity::-webkit-scrollbar {
+            width: 6px;
+        }
+        .recent-activity::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .recent-activity::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        .recent-activity::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="min-h-screen bg-gray-50">
+        <!-- Inclusion de la navbar -->
+        {% include 'components/navbar.html.twig' %}
+        
+        <!-- Inclusion de la sidebar -->
+        {% include 'components/sidebar.html.twig' %}
+        
+        <!-- Contenu principal -->
+        <main class="p-4 md:ml-64 h-auto pt-20">
+            <div class="container mx-auto px-4">
+                <h1 class="text-2xl font-bold text-gray-800 mb-6">Tableau de bord</h1>
+                
+                <!-- Cartes de statistiques -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Carte 1: Total des ventes -->
+                    <div class="bg-white rounded-lg shadow p-6 stats-card">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
+                                <i class="fas fa-shopping-cart text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Total des ventes</p>
+                                <h3 class="text-2xl font-bold">{{ total_sales|number_format(2, ',', ' ') }} €</h3>
+                                <p class="text-green-500 text-sm flex items-center">
+                                    <i class="fas fa-arrow-up mr-1"></i> 12% par rapport au mois dernier
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Carte 2: Commandes en attente -->
+                    <div class="bg-white rounded-lg shadow p-6 stats-card">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600 mr-4">
+                                <i class="fas fa-clock text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Commandes en attente</p>
+                                <h3 class="text-2xl font-bold">{{ pending_orders }}</h3>
+                                <p class="text-red-500 text-sm flex items-center">
+                                    <i class="fas fa-arrow-up mr-1"></i> 3 nouvelles commandes
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Carte 3: Nouveaux clients -->
+                    <div class="bg-white rounded-lg shadow p-6 stats-card">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
+                                <i class="fas fa-users text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Nouveaux clients</p>
+                                <h3 class="text-2xl font-bold">{{ new_customers }}</h3>
+                                <p class="text-green-500 text-sm flex items-center">
+                                    <i class="fas fa-arrow-up mr-1"></i> 8% par rapport au mois dernier
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Carte 4: Produits en stock bas -->
+                    <div class="bg-white rounded-lg shadow p-6 stats-card">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-red-100 text-red-600 mr-4">
+                                <i class="fas fa-exclamation-triangle text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Produits en stock bas</p>
+                                <h3 class="text-2xl font-bold">{{ low_stock_products }}</h3>
+                                <p class="text-yellow-500 text-sm flex items-center">
+                                    <i class="fas fa-arrow-up mr-1"></i> {{ critical_stock }} en stock critique
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Graphique et activités récentes -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- Graphique des ventes -->
+                    <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-semibold text-gray-800">Aperçu des ventes</h2>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 text-sm rounded-md bg-blue-100 text-blue-600">Mois</button>
+                                <button class="px-3 py-1 text-sm rounded-md text-gray-500 hover:bg-gray-100">Semaine</button>
+                                <button class="px-3 py-1 text-sm rounded-md text-gray-500 hover:bg-gray-100">Jour</button>
+                            </div>
+                        </div>
+                        <div class="h-64">
+                            <!-- Ici on pourrait intégrer un graphique avec Chart.js ou une autre librairie -->
+                            <div class="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
+                                <p class="text-gray-400">Graphique des ventes (à implémenter)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Activités récentes -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-4">Activités récentes</h2>
+                        <div class="recent-activity">
+                            {% for activity in recent_activities %}
+                                <div class="flex items-start py-3 border-b border-gray-100 last:border-0">
+                                    <div class="flex-shrink-0 w-10 h-10 rounded-full {{ activity.bg_color }} flex items-center justify-center text-white mr-3">
+                                        <i class="{{ activity.icon }}"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm text-gray-700">
+                                            <span class="font-medium">{{ activity.user }}</span> {{ activity.action }}
+                                            {% if activity.target %}
+                                                <span class="font-medium">{{ activity.target }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <p class="text-xs text-gray-400">{{ activity.time }}</p>
+                                    </div>
+                                    {% if activity.link %}
+                                        <a href="{{ activity.link }}" class="text-blue-500 hover:text-blue-700 text-sm">
+                                            Voir
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <p class="text-gray-500 text-center py-4">Aucune activité récente</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Dernières commandes -->
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-semibold text-gray-800">Dernières commandes</h2>
+                            <a href="{{ path('app_orders') }}" class="text-sm text-blue-500 hover:text-blue-700">Voir tout</a>
+                        </div>
+                        
+                        {% include 'components/table.html.twig' with {
+                            'id': 'recent-orders',
+                            'columns': [
+                                {'key': 'id', 'label': 'Commande #', 'sortable': true},
+                                {'key': 'customer', 'label': 'Client', 'sortable': true},
+                                {'key': 'date', 'label': 'Date', 'sortable': true, 'type': 'date'},
+                                {'key': 'total', 'label': 'Total', 'sortable': true, 'type': 'price'},
+                                {'key': 'status', 'label': 'Statut', 'sortable': true, 'type': 'status'},
+                                {'key': 'actions', 'label': 'Actions', 'sortable': false}
+                            ],
+                            'items': recent_orders,
+                            'empty_message': 'Aucune commande récente',
+                            'table_class': 'min-w-full',
+                            'row_actions': [
+                                {'icon': 'fas fa-eye', 'label': 'Voir', 'class': 'text-blue-500 hover:text-blue-700', 'action': 'view'},
+                                {'icon': 'fas fa-edit', 'label': 'Éditer', 'class': 'text-yellow-500 hover:text-yellow-700', 'action': 'edit'},
+                                {'icon': 'fas fa-trash', 'label': 'Supprimer', 'class': 'text-red-500 hover:text-red-700', 'action': 'delete', 'confirm': true}
+                            ],
+                            'bulk_actions': [
+                                {'label': 'Exporter en CSV', 'action': 'export-csv'},
+                                {'label': 'Marquer comme traitée', 'action': 'mark-as-processed'},
+                                {'label': 'Supprimer', 'action': 'delete', 'confirm': true, 'class': 'text-red-500'}
+                            ]
+                        } %}
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Script pour initialiser les graphiques (à implémenter avec Chart.js ou autre)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialisation du graphique des ventes
+            // Exemple avec Chart.js (à décommenter et configurer)
+            /*
+            const ctx = document.createElement('canvas').getContext('2d');
+            document.querySelector('.chart-container').appendChild(ctx.canvas);
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+                    datasets: [{
+                        label: 'Ventes mensuelles',
+                        data: [65, 59, 80, 81, 56, 55, 40, 45, 60, 70, 75, 80],
+                        borderColor: 'rgb(59, 130, 246)',
+                        tension: 0.1,
+                        fill: true,
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                display: true,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' €';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            }
+                        }
+                    }
+                }
+            });
+            */
+        });
+    </script>
+{% endblock %}

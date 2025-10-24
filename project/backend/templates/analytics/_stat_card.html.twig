@@ -1,0 +1,50 @@
+{# _stat_card.html.twig #}
+{# 
+    Variables disponibles :
+    - title: Titre de la carte
+    - value: Valeur principale
+    - change: Pourcentage de changement
+    - icon: Chemin SVG de l'icône
+    - change_positive: Booléen indiquant si le changement est positif
+    - icon_color: Couleur de l'icône (par défaut: blue-500)
+#}
+{% set icon_color = icon_color|default('blue-500') %}
+
+<div class="bg-white overflow-hidden shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+        <div class="flex items-center">
+            <div class="flex-shrink-0 bg-{{ icon_color }} rounded-md p-3">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ icon }}" />
+                </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+                <dl>
+                    <dt class="text-sm font-medium text-gray-500 truncate">{{ title }}</dt>
+                    <dd class="flex items-baseline">
+                        <div class="text-2xl font-semibold text-gray-900">{{ value }}</div>
+                        {% if change is defined %}
+                            <div class="ml-2 flex items-baseline text-sm font-semibold {{ change_positive ? 'text-green-600' : 'text-red-600' }}">
+                                <svg class="self-center flex-shrink-0 h-5 w-5 {{ change_positive ? 'text-green-500' : 'text-red-500' }} transform {{ change_positive ? 'rotate-0' : 'rotate-180' }}" 
+                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                                </svg>
+                                <span class="sr-only">{{ change_positive ? 'Augmentation de' : 'Diminution de' }}</span>
+                                {{ change }}
+                            </div>
+                        {% endif %}
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    {% if link is defined and link is not empty %}
+        <div class="bg-gray-50 px-4 py-4 sm:px-6">
+            <div class="text-sm">
+                <a href="{{ link }}" class="font-medium text-{{ icon_color }} hover:text-{{ icon_color }}-700">
+                    Voir le détail<span class="sr-only"> {{ title }}</span>
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
