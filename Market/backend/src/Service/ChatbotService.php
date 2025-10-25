@@ -10,15 +10,13 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ChatbotService
 {
-    private EntityManagerInterface $entityManager;
-    private HttpClientInterface $httpClient;
-    private string $openaiApiKey;
     private array $conversationHistory = [];
 
     public function __construct(
-        EntityManagerInterface $entityManager,
-        HttpClientInterface $httpClient,
-        string $openaiApiKey
+        private readonly EntityManagerInterface $entityManager,
+        private readonly HttpClientInterface $httpClient,
+        private readonly string $openaiApiKey,
+        private string $kycDirectory
     ) {
         $this->entityManager = $entityManager;
         $this->httpClient = $httpClient;

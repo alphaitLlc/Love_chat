@@ -13,12 +13,16 @@ class KYCService
     private string $targetDirectory;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private SluggerInterface $slugger,
-        private NotificationService $notificationService,
-        string $kycDirectory
+        private readonly EntityManagerInterface $entityManager,
+        private readonly SluggerInterface $slugger,
+        private readonly NotificationService $notificationService,
+        private readonly string $kycDirectory
     ) {
         $this->targetDirectory = $kycDirectory;
+
+        if (!is_dir($this->targetDirectory)) {
+            mkdir($this->targetDirectory, 0755, true);
+        }
     }
 
     public function uploadDocument(User $user, string $type, UploadedFile $file): KYCDocument
